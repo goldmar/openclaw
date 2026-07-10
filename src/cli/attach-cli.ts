@@ -61,7 +61,7 @@ export async function registerAttachCli(program: Command, _argv: string[] = proc
 
       const cfg = getRuntimeConfig();
       const gateway = buildGatewayConnectionDetails({ config: cfg });
-      if (!isLoopbackHost(new URL(gateway.url).hostname)) {
+      if (cfg.gateway?.mode === "remote" || !isLoopbackHost(new URL(gateway.url).hostname)) {
         defaultRuntime.error(
           "openclaw attach requires a local Gateway because its MCP endpoint is loopback-only.",
         );

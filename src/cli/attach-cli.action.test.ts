@@ -12,9 +12,13 @@ const gatewayCalls: Array<{
   hasDeviceIdentityKey: boolean;
 }> = [];
 let gatewayUrl = "ws://127.0.0.1:18789";
+let gatewayUrlSource = "local loopback";
 let runtimeConfig: { gateway?: { mode?: "local" | "remote" } } = {};
 vi.mock("../gateway/call.js", () => ({
-  buildGatewayConnectionDetails: vi.fn(() => ({ url: gatewayUrl })),
+  buildGatewayConnectionDetails: vi.fn(() => ({
+    url: gatewayUrl,
+    urlSource: gatewayUrlSource,
+  })),
   callGateway: vi.fn(
     async (p: { method: string; params: Record<string, unknown>; mode?: string }) => {
       gatewayCalls.push({
@@ -76,6 +80,7 @@ describe("openclaw attach (action)", () => {
   beforeEach(() => {
     gatewayCalls.length = 0;
     gatewayUrl = "ws://127.0.0.1:18789";
+    gatewayUrlSource = "local loopback";
     runtimeConfig = {};
     logs.length = 0;
     exitCode = undefined;
@@ -129,6 +134,13 @@ describe("openclaw attach (action)", () => {
     expect(gatewayCalls.find((c) => c.method === "attach.grant")).toBeUndefined();
   });
 
+  it("rejects a loopback Gateway URL override because it may be an SSH tunnel", async () => {
+    gatewayUrlSource = "env OPENCLAW_GATEWAY_URL";
+    await runAttach("--print-config");
+    expect(exitCode).toBe(1);
+    expect(gatewayCalls.find((c) => c.method === "attach.grant")).toBeUndefined();
+  });
+
   it("rejects an empty --ttl rather than silently defaulting", async () => {
     await runAttach("--ttl", "", "--print-config");
     expect(exitCode).toBe(1);
@@ -160,6 +172,32 @@ describe("openclaw attach (action)", () => {
     await tick();
     expect(gatewayCalls.find((c) => c.method === "attach.revoke")?.params.token).toBe("tok-123");
     expect(exitCode).toBe(0);
+  });
+
+  it("does not expose broader Gateway credentials to Claude Code", async () => {
+    const previousToken = process.env.OPENCLAW_GATEWAY_TOKEN;
+    const previousPassword = process.env.OPENCLAW_GATEWAY_PASSWORD;
+    process.env.OPENCLAW_GATEWAY_TOKEN = "gateway-token";
+    process.env.OPENCLAW_GATEWAY_PASSWORD = "gateway-password";
+    try {
+      await runAttach("--session", "agent:main:spawn");
+      const { spawn } = await import("node:child_process");
+      const env = vi.mocked(spawn).mock.calls.at(-1)?.[2]?.env;
+      expect(env?.OPENCLAW_GATEWAY_TOKEN).toBeUndefined();
+      expect(env?.OPENCLAW_GATEWAY_PASSWORD).toBeUndefined();
+      expect(env?.OPENCLAW_MCP_TOKEN).toBe("tok-123");
+    } finally {
+      if (previousToken === undefined) {
+        delete process.env.OPENCLAW_GATEWAY_TOKEN;
+      } else {
+        process.env.OPENCLAW_GATEWAY_TOKEN = previousToken;
+      }
+      if (previousPassword === undefined) {
+        delete process.env.OPENCLAW_GATEWAY_PASSWORD;
+      } else {
+        process.env.OPENCLAW_GATEWAY_PASSWORD = previousPassword;
+      }
+    }
   });
 
   it("revokes once and surfaces a launch failure when the child errors", async () => {

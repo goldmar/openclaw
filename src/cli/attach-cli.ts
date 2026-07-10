@@ -15,6 +15,7 @@ import {
   resolveWindowsSpawnProgram,
 } from "../plugin-sdk/windows-spawn.js";
 import { defaultRuntime } from "../runtime.js";
+import { omitEnvKeysCaseInsensitive } from "../secrets/provider-env-vars.js";
 
 type AttachGrant = {
   sessionKey: string;
@@ -82,7 +83,11 @@ export async function registerAttachCli(program: Command, _argv: string[] = proc
 
       const cfg = getRuntimeConfig();
       const gateway = buildGatewayConnectionDetails({ config: cfg });
-      if (cfg.gateway?.mode === "remote" || !isLoopbackHost(new URL(gateway.url).hostname)) {
+      if (
+        cfg.gateway?.mode === "remote" ||
+        gateway.urlSource !== "local loopback" ||
+        !isLoopbackHost(new URL(gateway.url).hostname)
+      ) {
         defaultRuntime.error(
           "openclaw attach requires a local Gateway because its MCP endpoint is loopback-only.",
         );
@@ -159,9 +164,13 @@ export async function registerAttachCli(program: Command, _argv: string[] = proc
         `Attaching Claude Code to session ${grant.sessionKey} (grant expires ${expiresAt})…`,
       );
       const invocation = resolveAttachSpawnInvocation({ bin: opts.bin, args: claudeArgs });
+      const childEnv = omitEnvKeysCaseInsensitive(process.env, [
+        "OPENCLAW_GATEWAY_TOKEN",
+        "OPENCLAW_GATEWAY_PASSWORD",
+      ]);
       const child = spawn(invocation.command, invocation.argv, {
         stdio: "inherit",
-        env: { ...process.env, ...grant.env },
+        env: { ...childEnv, ...grant.env },
         windowsHide: invocation.windowsHide,
       });
 

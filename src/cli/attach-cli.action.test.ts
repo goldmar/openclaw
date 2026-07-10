@@ -200,14 +200,27 @@ describe("openclaw attach (action)", () => {
 
   it("detaches its signal handlers after the child exits (no listener leak)", async () => {
     const baseInt = process.listenerCount("SIGINT");
+    const baseHup = process.listenerCount("SIGHUP");
     const baseTerm = process.listenerCount("SIGTERM");
     await runAttach("--session", "agent:main:spawn");
     expect(process.listenerCount("SIGINT")).toBe(baseInt + 1);
+    expect(process.listenerCount("SIGHUP")).toBe(baseHup + 1);
     spawnedChild.emit("exit", 0, null);
     await tick();
     await tick();
     expect(process.listenerCount("SIGINT")).toBe(baseInt);
+    expect(process.listenerCount("SIGHUP")).toBe(baseHup);
     expect(process.listenerCount("SIGTERM")).toBe(baseTerm);
+  });
+
+  it("forwards terminal hangup so the child exit path revokes the grant", async () => {
+    await runAttach("--session", "agent:main:spawn");
+    process.emit("SIGHUP");
+    expect(spawnedChild.kill).toHaveBeenCalledWith("SIGHUP");
+    spawnedChild.emit("exit", null, "SIGHUP");
+    await tick();
+    await tick();
+    expect(gatewayCalls.find((c) => c.method === "attach.revoke")?.params.token).toBe("tok-123");
   });
 
   it("errors on a grant with a non-numeric expiresAtMs instead of crashing on toISOString", async () => {

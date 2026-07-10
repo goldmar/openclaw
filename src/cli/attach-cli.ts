@@ -143,9 +143,11 @@ export async function registerAttachCli(program: Command, _argv: string[] = proc
       });
 
       const onSigint = () => {};
+      const onSighup = () => child.kill("SIGHUP");
       const onSigterm = () => child.kill("SIGTERM");
       const finish = (code: number) => {
         process.off("SIGINT", onSigint);
+        process.off("SIGHUP", onSighup);
         process.off("SIGTERM", onSigterm);
         defaultRuntime.exit(code);
       };
@@ -167,6 +169,7 @@ export async function registerAttachCli(program: Command, _argv: string[] = proc
         })();
       });
       process.on("SIGINT", onSigint);
+      process.on("SIGHUP", onSighup);
       process.on("SIGTERM", onSigterm);
     });
 }

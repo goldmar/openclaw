@@ -3,6 +3,7 @@ import "./isolated-agent.mocks.js";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { runEmbeddedAgent } from "../agents/embedded-agent.js";
+import { resolveAgentHarnessPolicy } from "../agents/harness/policy.js";
 import { loadModelCatalog } from "../agents/model-catalog.js";
 import { BASE_THINKING_LEVELS } from "../auto-reply/thinking.shared.js";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
@@ -122,6 +123,54 @@ describe("runCronIsolatedAgentTurn model overrides", () => {
       directModel.assert();
     });
   });
+
+  it.each(["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"])(
+    "passes an allowlisted OpenAI %s cron override unchanged to the Codex runtime",
+    async (model) => {
+      await withTempHome(async (home) => {
+        const models = {
+          "openai/gpt-5.6-sol": { agentRuntime: { id: "codex" as const } },
+          "openai/gpt-5.6-terra": { agentRuntime: { id: "codex" as const } },
+          "openai/gpt-5.6-luna": { agentRuntime: { id: "codex" as const } },
+        };
+        const cfgOverrides: Partial<OpenClawConfig> = {
+          agents: {
+            defaults: {
+              model: { primary: "openai/gpt-5.6-sol" },
+              models,
+            },
+          },
+        };
+
+        vi.mocked(loadModelCatalog).mockResolvedValue(
+          Object.keys(models).map((ref) => ({
+            provider: "openai",
+            id: ref.slice("openai/".length),
+            name: ref.slice("openai/".length),
+          })),
+        );
+
+        const { res } = await runCronTurn(home, {
+          cfgOverrides,
+          jobPayload: {
+            kind: "agentTurn",
+            message: DEFAULT_MESSAGE,
+            model: `openai/${model}`,
+          },
+        });
+
+        expect(res.status).toBe("ok");
+        expectEmbeddedProviderModel({ provider: "openai", model }).assert();
+        expect(
+          resolveAgentHarnessPolicy({
+            provider: "openai",
+            modelId: model,
+            config: cfgOverrides,
+          }),
+        ).toEqual({ runtime: "codex", runtimeSource: "model" });
+      });
+    },
+  );
 
   it("uses stored model overrides when cron payload omits a model", async () => {
     await withTempHome(async (home) => {

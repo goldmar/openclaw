@@ -699,18 +699,18 @@ export function createXaiOAuthAuthMethod(): ProviderAuthMethod {
   return {
     id: XAI_OAUTH_METHOD_ID,
     label: "xAI OAuth",
-    hint: "Browser sign-in for eligible xAI accounts",
+    hint: "Remote-friendly browser sign-in without a localhost callback",
     kind: "oauth",
     wizard: {
       choiceId: XAI_OAUTH_CHOICE_ID,
       choiceLabel: "xAI OAuth",
-      choiceHint: "Browser sign-in for eligible xAI accounts",
+      choiceHint: "Remote-friendly browser sign-in without a localhost callback",
       groupId: PROVIDER_ID,
       groupLabel: "xAI (Grok)",
-      groupHint: "API key or browser OAuth",
+      groupHint: "API key or OAuth",
       methodId: XAI_OAUTH_METHOD_ID,
     },
-    run: async (ctx) => loginXaiOAuth(ctx),
+    run: async (ctx) => loginXaiDeviceCode(ctx),
   };
 }
 
@@ -718,15 +718,16 @@ export function createXaiDeviceCodeAuthMethod(): ProviderAuthMethod {
   return {
     id: XAI_DEVICE_CODE_METHOD_ID,
     label: "xAI device code",
-    hint: "Remote-friendly browser sign-in without a localhost callback",
+    hint: "Deprecated alias for xAI OAuth device-code login",
     kind: "device_code",
     wizard: {
       choiceId: XAI_DEVICE_CODE_CHOICE_ID,
       choiceLabel: "xAI device code",
-      choiceHint: "Remote-friendly browser sign-in without a localhost callback",
+      choiceHint: "Compatibility alias for xAI OAuth device-code sign-in",
+      assistantVisibility: "manual-only",
       groupId: PROVIDER_ID,
       groupLabel: "xAI (Grok)",
-      groupHint: "API key or browser OAuth",
+      groupHint: "API key or OAuth",
       methodId: XAI_DEVICE_CODE_METHOD_ID,
     },
     run: async (ctx) => loginXaiDeviceCode(ctx),

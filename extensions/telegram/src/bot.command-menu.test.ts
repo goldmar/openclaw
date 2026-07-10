@@ -132,7 +132,10 @@ describe("createTelegramBot command menu", () => {
 
     const registered = registeredCommands();
     const skillCommands = resolveSkillCommands(config);
-    const native = listNativeCommandSpecsForConfig(config, { skillCommands }).map((command) => ({
+    const native = listNativeCommandSpecsForConfig(config, {
+      skillCommands,
+      provider: "telegram",
+    }).map((command) => ({
       command: normalizeTelegramCommandName(command.name),
       description: command.description,
     }));
@@ -160,6 +163,7 @@ describe("createTelegramBot command menu", () => {
           allowFrom: ["*"],
           customCommands: [
             { command: "status", description: "Custom status" },
+            { command: "login", description: "Custom login" },
             { command: "custom_backup", description: "Git backup" },
           ],
         },
@@ -183,7 +187,10 @@ describe("createTelegramBot command menu", () => {
 
     const registered = registeredCommands();
     const skillCommands = resolveSkillCommands(config);
-    const native = listNativeCommandSpecsForConfig(config, { skillCommands }).map((command) => ({
+    const native = listNativeCommandSpecsForConfig(config, {
+      skillCommands,
+      provider: "telegram",
+    }).map((command) => ({
       command: normalizeTelegramCommandName(command.name),
       description: command.description,
     }));
@@ -197,6 +204,7 @@ describe("createTelegramBot command menu", () => {
     ]);
     expect(registered.find((command) => command.command === "status")).toEqual(nativeStatus);
     expect(countMatching(registered, (command) => command.command === "status")).toBe(1);
+    expect(countMatching(registered, (command) => command.command === "login")).toBe(1);
     expect(errorSpy).toHaveBeenCalled();
   });
 

@@ -925,6 +925,49 @@ describe("openai transport stream", () => {
     expect(headers.accept).toBeUndefined();
   });
 
+  it.each(["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"])(
+    "adds a session id for %s without spoofing Codex attribution",
+    (modelId) => {
+      vi.stubEnv("OPENCLAW_VERSION", "2026.6.11");
+      const model = {
+        id: modelId,
+        name: modelId,
+        api: "openai-chatgpt-responses",
+        provider: "openai",
+        baseUrl: "https://chatgpt.com/backend-api/codex",
+        reasoning: true,
+        input: ["text"],
+        cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+        contextWindow: 372000,
+        maxTokens: 128000,
+      } satisfies Model<"openai-chatgpt-responses">;
+      const context = {
+        systemPrompt: "Be concise.",
+        messages: [{ role: "user", content: "hello" }],
+        tools: [{ name: "lookup", description: "Lookup", parameters: { type: "object" } }],
+      } as never;
+
+      const headers = testing.buildOpenAIClientHeaders(model, context);
+      const generatedSessionHeaders = testing.buildOpenAIResponsesTurnHeaders({
+        model,
+        turnId: "generated-turn-id",
+      });
+      const suppliedSessionHeaders = testing.buildOpenAIResponsesTurnHeaders({
+        model,
+        sessionId: "existing-session-id",
+        turnId: "generated-turn-id",
+      });
+      expectRecordFields(headers, {
+        originator: "openclaw",
+        version: "2026.6.11",
+        "User-Agent": "openclaw/2026.6.11",
+      });
+      expect(headers).not.toHaveProperty("OpenAI-Beta");
+      expect(generatedSessionHeaders).toMatchObject({ "session-id": "generated-turn-id" });
+      expect(suppliedSessionHeaders).toMatchObject({ "session-id": "existing-session-id" });
+    },
+  );
+
   it("adds SSE Accept only to native ChatGPT/Codex Responses stream requests", () => {
     const codexModel = {
       id: "gpt-5.5",

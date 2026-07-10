@@ -93,7 +93,7 @@ import {
   resolveModelRequestTimeoutMs,
 } from "./provider-transport-fetch.js";
 import { sanitizeResponsesImagePayload } from "./responses-image-payload-sanitizer.js";
-import type { StreamFn } from "./runtime/index.js";
+import { uuidv7, type StreamFn } from "./runtime/index.js";
 import { stripSystemPromptCacheBoundary } from "./system-prompt-cache-boundary.js";
 import { transformTransportMessages } from "./transport-message-transform.js";
 import {
@@ -2019,6 +2019,21 @@ function createOpenAIResponsesClient(
   });
 }
 
+function buildOpenAIResponsesTurnHeaders(params: {
+  model: Model;
+  sessionId?: string;
+  turnId: string;
+  turnHeaders?: Record<string, string>;
+}): Record<string, string> | undefined {
+  if (!usesNativeOpenAICodexResponsesBackend(params.model)) {
+    return params.turnHeaders;
+  }
+  return {
+    "session-id": params.sessionId?.trim() || params.turnId,
+    ...params.turnHeaders,
+  };
+}
+
 export function createOpenAIResponsesTransportStreamFn(): StreamFn {
   return (model, context, options) => {
     const responsesOptions = options as OpenAIResponsesOptions | undefined;
@@ -2044,9 +2059,11 @@ export function createOpenAIResponsesTransportStreamFn(): StreamFn {
       };
       try {
         const apiKey = options?.apiKey || getEnvApiKey(model.provider) || "";
+        const turnId = randomUUID();
+        const codexSessionId = options?.sessionId?.trim() || uuidv7();
         const turnState = resolveProviderTransportTurnState(model, {
           sessionId: options?.sessionId,
-          turnId: randomUUID(),
+          turnId,
           attempt: 1,
           transport: "stream",
         });
@@ -2055,7 +2072,12 @@ export function createOpenAIResponsesTransportStreamFn(): StreamFn {
           context,
           apiKey,
           options?.headers,
-          turnState?.headers,
+          buildOpenAIResponsesTurnHeaders({
+            model,
+            sessionId: codexSessionId,
+            turnId,
+            turnHeaders: turnState?.headers,
+          }),
         );
         let params = buildOpenAIResponsesParams(
           model,
@@ -4489,6 +4511,7 @@ export const testing = {
   getCompat,
   assertCodeModeResponsesToolSurface,
   buildOpenAIClientHeaders,
+  buildOpenAIResponsesTurnHeaders,
   buildOpenAISdkClientOptions,
   buildOpenAISdkRequestOptions,
   createAzureOpenAIClient,

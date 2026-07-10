@@ -9,6 +9,10 @@ title: "Attach CLI"
 `openclaw attach` launches Claude Code with a strict temporary MCP config bound
 to one Gateway session.
 
+The command requires a local Gateway. The scoped MCP endpoint listens only on
+the Gateway host's loopback interface, so remote Gateway targets are rejected
+before a grant is minted.
+
 ```sh
 openclaw attach
 openclaw attach --session agent:main:telegram:123 --ttl 600000

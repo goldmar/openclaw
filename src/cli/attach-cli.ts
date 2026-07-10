@@ -8,7 +8,8 @@ import {
   GATEWAY_CLIENT_NAMES,
 } from "../../packages/gateway-protocol/src/client-info.js";
 import { getRuntimeConfig } from "../config/io.js";
-import { callGateway } from "../gateway/call.js";
+import { buildGatewayConnectionDetails, callGateway } from "../gateway/call.js";
+import { isLoopbackHost } from "../gateway/net.js";
 import { defaultRuntime } from "../runtime.js";
 
 type AttachGrant = {
@@ -59,6 +60,14 @@ export async function registerAttachCli(program: Command, _argv: string[] = proc
       }
 
       const cfg = getRuntimeConfig();
+      const gateway = buildGatewayConnectionDetails({ config: cfg });
+      if (!isLoopbackHost(new URL(gateway.url).hostname)) {
+        defaultRuntime.error(
+          "openclaw attach requires a local Gateway because its MCP endpoint is loopback-only.",
+        );
+        defaultRuntime.exit(1);
+        return;
+      }
       const granted = (await callGateway({
         config: cfg,
         method: "attach.grant",

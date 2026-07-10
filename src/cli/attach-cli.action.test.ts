@@ -11,7 +11,9 @@ const gatewayCalls: Array<{
   mode?: string;
   hasDeviceIdentityKey: boolean;
 }> = [];
+let gatewayUrl = "ws://127.0.0.1:18789";
 vi.mock("../gateway/call.js", () => ({
+  buildGatewayConnectionDetails: vi.fn(() => ({ url: gatewayUrl })),
   callGateway: vi.fn(
     async (p: { method: string; params: Record<string, unknown>; mode?: string }) => {
       gatewayCalls.push({
@@ -72,6 +74,7 @@ const tick = () =>
 describe("openclaw attach (action)", () => {
   beforeEach(() => {
     gatewayCalls.length = 0;
+    gatewayUrl = "ws://127.0.0.1:18789";
     logs.length = 0;
     exitCode = undefined;
     spawnedChild.removeAllListeners();
@@ -107,6 +110,14 @@ describe("openclaw attach (action)", () => {
     await runAttach("--ttl", "-5", "--print-config");
     expect(exitCode).toBe(1);
     expect(gatewayCalls.find((c) => c.method === "attach.grant")).toBeUndefined();
+  });
+
+  it("rejects a remote Gateway before minting a loopback-only grant", async () => {
+    gatewayUrl = "wss://gateway.example.com";
+    await runAttach("--print-config");
+    expect(exitCode).toBe(1);
+    expect(gatewayCalls.find((c) => c.method === "attach.grant")).toBeUndefined();
+    expect(logs.join("\n")).toContain("requires a local Gateway");
   });
 
   it("rejects an empty --ttl rather than silently defaulting", async () => {

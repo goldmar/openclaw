@@ -10,6 +10,10 @@ import {
 import { getRuntimeConfig } from "../config/io.js";
 import { buildGatewayConnectionDetails, callGateway } from "../gateway/call.js";
 import { isLoopbackHost } from "../gateway/net.js";
+import {
+  materializeWindowsSpawnProgram,
+  resolveWindowsSpawnProgram,
+} from "../plugin-sdk/windows-spawn.js";
 import { defaultRuntime } from "../runtime.js";
 
 type AttachGrant = {
@@ -28,6 +32,23 @@ export function writeClaudeMcpConfig(mcpConfig: AttachGrant["mcpConfig"]): {
   const path = join(dir, ".mcp.json");
   writeFileSync(path, JSON.stringify(mcpConfig, null, 2), { encoding: "utf8", mode: 0o600 });
   return { path, cleanup: () => rmSync(dir, { recursive: true, force: true }) };
+}
+
+export function resolveAttachSpawnInvocation(params: {
+  bin: string;
+  args: string[];
+  platform?: NodeJS.Platform;
+  env?: NodeJS.ProcessEnv;
+  execPath?: string;
+}) {
+  const program = resolveWindowsSpawnProgram({
+    command: params.bin,
+    packageName: "@anthropic-ai/claude-code",
+    platform: params.platform,
+    env: params.env,
+    execPath: params.execPath,
+  });
+  return materializeWindowsSpawnProgram(program, params.args);
 }
 
 export async function registerAttachCli(program: Command, _argv: string[] = process.argv) {
@@ -137,9 +158,11 @@ export async function registerAttachCli(program: Command, _argv: string[] = proc
       defaultRuntime.log(
         `Attaching Claude Code to session ${grant.sessionKey} (grant expires ${expiresAt})…`,
       );
-      const child = spawn(opts.bin, claudeArgs, {
+      const invocation = resolveAttachSpawnInvocation({ bin: opts.bin, args: claudeArgs });
+      const child = spawn(invocation.command, invocation.argv, {
         stdio: "inherit",
         env: { ...process.env, ...grant.env },
+        windowsHide: invocation.windowsHide,
       });
 
       const onSigint = () => {};

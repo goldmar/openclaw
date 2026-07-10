@@ -873,8 +873,8 @@ function buildTelegramQaConfig(
         ...baseCfg.agents?.defaults,
         models: {
           ...baseCfg.agents?.defaults?.models,
-          "openai/gpt-5.5": {
-            ...baseCfg.agents?.defaults?.models?.["openai/gpt-5.5"],
+          "openai/gpt-5.6-sol": {
+            ...baseCfg.agents?.defaults?.models?.["openai/gpt-5.6-sol"],
             agentRuntime: { id: "openclaw" },
           },
         },

@@ -98,7 +98,7 @@ Each `models[]` entry can be **provider** or **CLI**:
     {
       type: "provider", // default if omitted
       provider: "openai",
-      model: "gpt-5.5",
+      model: "gpt-5.6-terra",
       prompt: "Describe the image in <= 500 chars.",
       maxChars: 500,
       maxBytes: 10485760,
@@ -335,7 +335,7 @@ When `mode: "all"`, outputs are labeled `[Image 1/2]`, `[Audio 2/2]`, etc.
       tools: {
         media: {
           models: [
-            { provider: "openai", model: "gpt-5.5", capabilities: ["image"] },
+            { provider: "openai", model: "gpt-5.6-terra", capabilities: ["image"] },
             {
               provider: "google",
               model: "gemini-3-flash-preview",
@@ -414,7 +414,7 @@ When `mode: "all"`, outputs are labeled `[Image 1/2]`, `[Audio 2/2]`, etc.
             maxBytes: 10485760,
             maxChars: 500,
             models: [
-              { provider: "openai", model: "gpt-5.5" },
+              { provider: "openai", model: "gpt-5.6-terra" },
               { provider: "anthropic", model: "claude-opus-4-6" },
               {
                 type: "cli",

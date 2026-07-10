@@ -6,7 +6,10 @@ import {
   type AudioTranscriptionRequest,
   type MediaUnderstandingProvider,
 } from "openclaw/plugin-sdk/media-understanding";
-import { OPENAI_DEFAULT_AUDIO_TRANSCRIPTION_MODEL } from "./default-models.js";
+import {
+  OPENAI_DEFAULT_AUDIO_TRANSCRIPTION_MODEL,
+  OPENAI_DEFAULT_MEDIA_UNDERSTANDING_MODEL,
+} from "./default-models.js";
 
 const DEFAULT_OPENAI_AUDIO_BASE_URL = "https://api.openai.com/v1";
 
@@ -22,7 +25,10 @@ export async function transcribeOpenAiAudio(params: AudioTranscriptionRequest) {
 export const openaiMediaUnderstandingProvider: MediaUnderstandingProvider = {
   id: "openai",
   capabilities: ["image", "audio"],
-  defaultModels: { image: "gpt-5.5", audio: OPENAI_DEFAULT_AUDIO_TRANSCRIPTION_MODEL },
+  defaultModels: {
+    image: OPENAI_DEFAULT_MEDIA_UNDERSTANDING_MODEL,
+    audio: OPENAI_DEFAULT_AUDIO_TRANSCRIPTION_MODEL,
+  },
   autoPriority: { image: 20, audio: 20 },
   describeImage: describeImageWithModel,
   describeImages: describeImagesWithModel,

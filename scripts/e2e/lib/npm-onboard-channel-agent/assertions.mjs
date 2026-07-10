@@ -123,13 +123,13 @@ function configureMockModel() {
   const mockPort = parseMockOpenAiPort(process.argv[3]);
   const configPath = path.join(process.env.HOME, ".openclaw", "openclaw.json");
   const cfg = readJson(configPath);
-  applyMockOpenAiModelConfig(cfg, { mockPort });
+  applyMockOpenAiModelConfig(cfg, { mockPort, modelRef: "openai/gpt-5.6-sol" });
   fs.writeFileSync(configPath, `${JSON.stringify(cfg, null, 2)}\n`);
 }
 
 function assertMockModelConfig() {
   const mockPort = parseMockOpenAiPort(process.argv[3]);
-  const expectedModelRef = "openai/gpt-5.5";
+  const expectedModelRef = "openai/gpt-5.6-sol";
   const expectedBaseUrl = `http://127.0.0.1:${mockPort}/v1`;
   const configPath = path.join(process.env.HOME, ".openclaw", "openclaw.json");
   const cfg = readJson(configPath);

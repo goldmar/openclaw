@@ -596,7 +596,7 @@ and troubleshooting see the main [FAQ](/help/faq).
 
   <Accordion title="How does Codex auth work?">
     OpenClaw supports **OpenAI Code (Codex)** via OAuth (ChatGPT sign-in). Use
-    `openai/gpt-5.5` for the common setup: ChatGPT/Codex subscription auth plus
+    `openai/gpt-5.6-sol` for the common setup: ChatGPT/Codex subscription auth plus
     native Codex app-server execution. Legacy Codex GPT refs are
     legacy config repaired by `openclaw doctor --fix`. Direct OpenAI API-key
     access remains available for non-agent OpenAI API surfaces and for agent
@@ -610,9 +610,9 @@ and troubleshooting see the main [FAQ](/help/faq).
     migration warnings.
     Older configs also used it as a model prefix:
 
-    - `openai/gpt-5.5` = ChatGPT/Codex subscription auth with native Codex runtime for agent turns
+    - `openai/gpt-5.6-sol` = ChatGPT/Codex subscription auth with native Codex runtime for agent turns
     - legacy Codex GPT-5.5 ref = legacy model route repaired by `openclaw doctor --fix`
-    - `openai/gpt-5.5` plus an ordered `openai` API-key profile = API-key auth for an OpenAI agent model
+    - `openai/gpt-5.6-sol` plus an ordered `openai` API-key profile = API-key auth for an OpenAI agent model
     - legacy Codex auth profile ids = legacy auth profile id migrated by `openclaw doctor --fix`
 
     If you want the direct OpenAI Platform billing/limit path, set

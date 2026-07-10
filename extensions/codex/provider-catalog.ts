@@ -13,6 +13,8 @@ export const CODEX_PROVIDER_ID = "codex";
 export const CODEX_BASE_URL = "https://chatgpt.com/backend-api";
 /** Synthetic auth marker understood by Codex app-server runtime paths. */
 export const CODEX_APP_SERVER_AUTH_MARKER = "codex-app-server";
+/** General-purpose image understanding model for the Codex app-server path. */
+export const CODEX_DEFAULT_MEDIA_UNDERSTANDING_MODEL = "gpt-5.6-terra";
 
 const DEFAULT_CONTEXT_WINDOW = 272_000;
 const DEFAULT_MAX_TOKENS = 128_000;
@@ -20,11 +22,35 @@ const DEFAULT_MAX_TOKENS = 128_000;
 /** Offline fallback catalog used when live app-server discovery is unavailable. */
 export const FALLBACK_CODEX_MODELS = [
   {
+    id: "gpt-5.6-sol",
+    model: "gpt-5.6-sol",
+    displayName: "GPT-5.6 Sol",
+    description: "Flagship frontier agentic coding model.",
+    isDefault: true,
+    inputModalities: ["text", "image"],
+    supportedReasoningEfforts: ["low", "medium", "high", "xhigh", "max"],
+  },
+  {
+    id: "gpt-5.6-terra",
+    model: "gpt-5.6-terra",
+    displayName: "GPT-5.6 Terra",
+    description: "Balanced frontier model for general-purpose work.",
+    inputModalities: ["text", "image"],
+    supportedReasoningEfforts: ["low", "medium", "high", "xhigh", "max"],
+  },
+  {
+    id: "gpt-5.6-luna",
+    model: "gpt-5.6-luna",
+    displayName: "GPT-5.6 Luna",
+    description: "Fast frontier model for high-throughput work.",
+    inputModalities: ["text", "image"],
+    supportedReasoningEfforts: ["low", "medium", "high", "xhigh", "max"],
+  },
+  {
     id: "gpt-5.5",
     model: "gpt-5.5",
     displayName: "gpt-5.5",
-    description: "Latest frontier agentic coding model.",
-    isDefault: true,
+    description: "Previous frontier agentic coding model.",
     inputModalities: ["text", "image"],
     supportedReasoningEfforts: ["low", "medium", "high", "xhigh"],
   },

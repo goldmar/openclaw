@@ -86,7 +86,7 @@ When debugging real providers/models (requires real creds):
 - Live suite (models + gateway tool/image probes): `pnpm test:live`
 - Target one live file quietly: `pnpm test:live -- src/agents/models.profiles.live.test.ts`
 - Runtime performance reports: dispatch `OpenClaw Performance` with
-  `live_openai_candidate=true` for a real `openai/gpt-5.5` agent turn or
+  `live_openai_candidate=true` for a real `openai/gpt-5.6-sol` agent turn or
   `deep_profile=true` for Kova CPU/heap/trace artifacts. Daily scheduled runs
   publish mock-provider, deep-profile, and GPT 5.5 lane artifacts to
   `openclaw/clawgrit-reports` when `CLAWGRIT_REPORTS_TOKEN` is configured. The
@@ -362,7 +362,7 @@ gh workflow run package-acceptance.yml --ref main \
   - Use `--platform macos`, `--platform windows`, or `--platform linux` while
     iterating on one guest. Use `--json` for the summary artifact path and
     per-lane status.
-  - The OpenAI lane uses `openai/gpt-5.5` for the live agent-turn proof by
+  - The OpenAI lane uses `openai/gpt-5.6-sol` for the live agent-turn proof by
     default. Pass `--model <provider/model>` or set
     `OPENCLAW_PARALLELS_OPENAI_MODEL` when deliberately validating another
     OpenAI model.

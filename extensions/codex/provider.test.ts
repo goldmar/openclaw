@@ -1,6 +1,7 @@
 // Codex tests cover provider plugin behavior.
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CODEX_GPT5_BEHAVIOR_CONTRACT } from "./prompt-overlay.js";
+import { FALLBACK_CODEX_MODELS } from "./provider-catalog.js";
 import { codexProviderDiscovery } from "./provider-discovery.js";
 import { buildCodexProvider, buildCodexProviderCatalog } from "./provider.js";
 import { CodexAppServerClient } from "./src/app-server/client.js";
@@ -19,7 +20,16 @@ afterEach(() => {
 function expectStaticFallbackCatalog(
   result: Awaited<ReturnType<typeof buildCodexProviderCatalog>>,
 ) {
-  expect(result.provider.models.map((model) => model.id)).toEqual(["gpt-5.5", "gpt-5.4-mini"]);
+  expect(result.provider.models.map((model) => model.id)).toEqual([
+    "gpt-5.6-sol",
+    "gpt-5.6-terra",
+    "gpt-5.6-luna",
+    "gpt-5.5",
+    "gpt-5.4-mini",
+  ]);
+  expect(FALLBACK_CODEX_MODELS.filter((model) => model.isDefault).map((model) => model.id)).toEqual(
+    ["gpt-5.6-sol"],
+  );
 }
 
 function createFakeCodexClient(): CodexAppServerClient {
@@ -369,7 +379,11 @@ describe("codex provider", () => {
     expectRecordFields(model, {
       id: "gpt-5.6-luna",
       reasoning: true,
-      compat: { supportsUsageInStreaming: true },
+      compat: {
+        supportsReasoningEffort: true,
+        supportedReasoningEfforts: ["low", "medium", "high", "xhigh", "max"],
+        supportsUsageInStreaming: true,
+      },
     });
     expect(
       provider
@@ -526,7 +540,7 @@ describe("codex provider", () => {
     const authResult = await authChoice?.run({} as never);
     expectRecordFields(authResult, {
       profiles: [],
-      defaultModel: "codex/gpt-5.5",
+      defaultModel: "codex/gpt-5.6-sol",
     });
   });
 
@@ -546,7 +560,7 @@ describe("codex provider", () => {
 
     expect(
       result && "provider" in result ? result.provider.models.map((model) => model.id) : [],
-    ).toEqual(["gpt-5.5", "gpt-5.4-mini"]);
+    ).toEqual(["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.5", "gpt-5.4-mini"]);
   });
 
   it("adds the GPT-5 prompt overlay to Codex provider runs", () => {

@@ -4,7 +4,10 @@
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
-import { resolveVisibleModelCatalog } from "./model-catalog-visibility.js";
+import {
+  isCodexRoutableOpenAIPlatformCatalogEntry,
+  resolveVisibleModelCatalog,
+} from "./model-catalog-visibility.js";
 import type { ModelCatalogEntry } from "./model-catalog.types.js";
 
 const normalizeProviderModelIdWithRuntimeMock = vi.hoisted(() => vi.fn());
@@ -18,6 +21,20 @@ describe("resolveVisibleModelCatalog", () => {
   beforeEach(() => {
     normalizeProviderModelIdWithRuntimeMock.mockReset();
   });
+
+  it.each(["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"])(
+    "treats %s as Codex-routable through OpenAI OAuth",
+    (id) => {
+      expect(
+        isCodexRoutableOpenAIPlatformCatalogEntry({
+          provider: "openai",
+          id,
+          name: id,
+          api: "openai-responses",
+        }),
+      ).toBe(true);
+    },
+  );
 
   it("can use static auth checks for gateway read-only model lists", async () => {
     const authChecker = vi.fn((provider: string) => provider === "openai");

@@ -32,16 +32,16 @@ changing config.
 
 ## Quick choice
 
-| Goal                                                 | Use                                                      | Notes                                                                 |
-| ---------------------------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------- |
-| ChatGPT/Codex subscription with native Codex runtime | `openai/gpt-5.5`                                         | Default OpenAI agent setup. Sign in with Codex auth.                  |
-| GPT-5.6 limited preview                              | `openai/gpt-5.6-sol`, `-terra`, or `-luna`               | Requires an OpenAI-approved API organization or Codex workspace.      |
-| Direct API-key billing for agent models              | `openai/gpt-5.5` plus a Codex-compatible API-key profile | Use `auth.order.openai` to place the backup after subscription auth.  |
-| Direct API-key billing through explicit OpenClaw     | `openai/gpt-5.5` plus provider/model runtime `openclaw`  | Select a normal `openai` API-key profile.                             |
-| Latest ChatGPT Instant API alias                     | `openai/chat-latest`                                     | Direct API-key only. Moving alias for experiments, not the default.   |
-| ChatGPT/Codex subscription auth through OpenClaw     | `openai/gpt-5.5` plus provider/model runtime `openclaw`  | Select an `openai` OAuth profile for the compatibility route.         |
-| Image generation or editing                          | `openai/gpt-image-2`                                     | Works with either `OPENAI_API_KEY` or OpenAI Codex OAuth.             |
-| Transparent-background images                        | `openai/gpt-image-1.5`                                   | Use `outputFormat=png` or `webp` and `openai.background=transparent`. |
+| Goal                                                 | Use                                                          | Notes                                                                 |
+| ---------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------- |
+| ChatGPT/Codex subscription with native Codex runtime | `openai/gpt-5.6-sol`                                         | Default OpenAI agent setup. Sign in with Codex auth.                  |
+| GPT-5.6 limited preview                              | `openai/gpt-5.6-sol`, `-terra`, or `-luna`                   | Requires an OpenAI-approved API organization or Codex workspace.      |
+| Direct API-key billing for agent models              | `openai/gpt-5.6-sol` plus a Codex-compatible API-key profile | Use `auth.order.openai` to place the backup after subscription auth.  |
+| Direct API-key billing through explicit OpenClaw     | `openai/gpt-5.6-sol` plus provider/model runtime `openclaw`  | Select a normal `openai` API-key profile.                             |
+| Latest ChatGPT Instant API alias                     | `openai/chat-latest`                                         | Direct API-key only. Moving alias for experiments, not the default.   |
+| ChatGPT/Codex subscription auth through OpenClaw     | `openai/gpt-5.6-sol` plus provider/model runtime `openclaw`  | Select an `openai` OAuth profile for the compatibility route.         |
+| Image generation or editing                          | `openai/gpt-image-2`                                         | Works with either `OPENAI_API_KEY` or OpenAI Codex OAuth.             |
+| Transparent-background images                        | `openai/gpt-image-1.5`                                       | Use `outputFormat=png` or `webp` and `openai.background=transparent`. |
 
 ## Naming map
 
@@ -63,9 +63,9 @@ legacy Codex model refs, legacy Codex auth profile ids, and
 legacy Codex auth order to the canonical OpenAI route.
 
 <Note>
-GPT-5.5 is available through both direct OpenAI Platform API-key access and
+GPT-5.6 Sol is available through approved direct OpenAI Platform API-key and
 subscription/OAuth routes. For ChatGPT/Codex subscription plus native Codex
-execution, use `openai/gpt-5.5`; unset runtime config now selects the Codex
+execution, use `openai/gpt-5.6-sol`; unset runtime config selects the Codex
 harness for OpenAI agent turns. Use OpenAI API-key profiles only when you want
 direct API-key auth for an OpenAI agent model.
 </Note>
@@ -85,9 +85,9 @@ balanced tier, and Luna as the fast, lower-cost tier. See the
 and [preview access guide](https://help.openai.com/en/articles/20001325-a-preview-of-gpt-5-6-sol-terra-and-luna).
 
 Access is allowlisted during the preview and can be granted separately for the
-API and Codex. A paid ChatGPT plan alone does not grant access. OpenClaw keeps
-`openai/gpt-5.5` as the default; selecting a GPT-5.6 ref without access returns
-the upstream access error instead of falling back silently.
+API and Codex. A paid ChatGPT plan alone does not grant access. OpenClaw uses
+`openai/gpt-5.6-sol` as the default; accounts without access must explicitly
+select an older compatible model because OpenClaw does not fall back silently.
 
 <Note>
 OpenAI agent model turns require the bundled Codex app-server plugin. Explicit
@@ -194,9 +194,9 @@ Choose your preferred auth method and follow the setup steps.
 
     | Model ref              | Runtime config             | Route                       | Auth             |
     | ---------------------- | -------------------------- | --------------------------- | ---------------- |
-    | `openai/gpt-5.5`      | omitted / provider/model `agentRuntime.id: "codex"` | Codex app-server harness | Codex-compatible OpenAI profile |
+    | `openai/gpt-5.6-sol`  | omitted / provider/model `agentRuntime.id: "codex"` | Codex app-server harness | Codex-compatible OpenAI profile |
     | `openai/gpt-5.4-mini` | omitted / provider/model `agentRuntime.id: "codex"` | Codex app-server harness | Codex-compatible OpenAI profile |
-    | `openai/gpt-5.5`      | provider/model `agentRuntime.id: "openclaw"`              | OpenClaw embedded runtime      | Selected `openai` profile |
+    | `openai/gpt-5.6-sol`  | provider/model `agentRuntime.id: "openclaw"`              | OpenClaw embedded runtime      | Selected `openai` profile |
 
     <Note>
     `openai/*` agent models use the Codex app-server harness. To use API-key
@@ -211,7 +211,7 @@ Choose your preferred auth method and follow the setup steps.
     ```json5
     {
       env: { OPENAI_API_KEY: "example-openai-key-not-real" },
-      agents: { defaults: { model: { primary: "openai/gpt-5.5" } } },
+      agents: { defaults: { model: { primary: "openai/gpt-5.6-sol" } } },
     }
     ```
 
@@ -261,7 +261,7 @@ Choose your preferred auth method and follow the setup steps.
       </Step>
       <Step title="Use the canonical OpenAI model route">
         ```bash
-        openclaw config set agents.defaults.model.primary openai/gpt-5.5
+        openclaw config set agents.defaults.model.primary openai/gpt-5.6-sol
         ```
 
         No runtime config is required for the default path. OpenAI agent turns
@@ -282,13 +282,13 @@ Choose your preferred auth method and follow the setup steps.
 
     | Model ref | Runtime config | Route | Auth |
     |-----------|----------------|-------|------|
-    | `openai/gpt-5.5` | omitted / provider/model `agentRuntime.id: "codex"` | Native Codex app-server harness | Codex sign-in or ordered `openai` auth profile |
-    | `openai/gpt-5.5` | provider/model `agentRuntime.id: "openclaw"` | OpenClaw embedded runtime with internal Codex-auth transport | Selected `openai` OAuth profile |
+    | `openai/gpt-5.6-sol` | omitted / provider/model `agentRuntime.id: "codex"` | Native Codex app-server harness | Codex sign-in or ordered `openai` auth profile |
+    | `openai/gpt-5.6-sol` | provider/model `agentRuntime.id: "openclaw"` | OpenClaw embedded runtime with internal Codex-auth transport | Selected `openai` OAuth profile |
     | legacy Codex GPT-5.5 ref | repaired by doctor | Legacy route rewritten to `openai/gpt-5.5` | Migrated OpenAI OAuth profile |
     | `codex-cli/gpt-5.5` | repaired by doctor | Legacy CLI route rewritten to `openai/gpt-5.5` | Codex app-server auth |
 
     <Warning>
-    Prefer `openai/gpt-5.5` for new subscription-backed agent config. Older
+    Prefer `openai/gpt-5.6-sol` for new subscription-backed agent config. Older
     legacy Codex GPT refs are legacy OpenClaw routes, not the native Codex runtime
     path; run `openclaw doctor --fix` when you want to migrate them to canonical
     `openai/*` refs. `gpt-5.3-codex-spark` remains limited to accounts whose
@@ -299,7 +299,7 @@ Choose your preferred auth method and follow the setup steps.
     <Note>
     The legacy Codex model prefix is legacy config repaired by doctor. For
     the common subscription plus native runtime setup, sign in with Codex auth
-    but keep the model ref as `openai/gpt-5.5`. New config should put OpenAI
+    but keep the model ref as `openai/gpt-5.6-sol`. New config should put OpenAI
     agent auth order under `auth.order.openai`; doctor migrates older
     legacy Codex auth order entries.
     </Note>
@@ -311,13 +311,13 @@ Choose your preferred auth method and follow the setup steps.
       plugins: { entries: { codex: { enabled: true } } },
       agents: {
         defaults: {
-          model: { primary: "openai/gpt-5.5" },
+          model: { primary: "openai/gpt-5.6-sol" },
         },
       },
     }
     ```
 
-    With an API-key backup, keep the model on `openai/gpt-5.5` and put the
+    With an API-key backup, keep the model on `openai/gpt-5.6-sol` and put the
     auth order under `openai`. OpenClaw will try the subscription first, then
     the API key, while staying on the Codex harness:
 
@@ -326,7 +326,7 @@ Choose your preferred auth method and follow the setup steps.
       plugins: { entries: { codex: { enabled: true } } },
       agents: {
         defaults: {
-          model: { primary: "openai/gpt-5.5" },
+          model: { primary: "openai/gpt-5.6-sol" },
         },
       },
       auth: {

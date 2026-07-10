@@ -85,7 +85,7 @@ describe("codex plugin", () => {
     expect(typeof agentHarnessRegistration.dispose).toBe("function");
     expect(mediaProviderRegistration?.id).toBe("codex");
     expect(mediaProviderRegistration?.capabilities).toEqual(["image"]);
-    expect(mediaProviderRegistration?.defaultModels).toEqual({ image: "gpt-5.5" });
+    expect(mediaProviderRegistration?.defaultModels).toEqual({ image: "gpt-5.6-terra" });
     expect(typeof mediaProviderRegistration?.describeImage).toBe("function");
     expect(typeof mediaProviderRegistration?.describeImages).toBe("function");
     const webSearchRegistration = mockCallArg(registerWebSearchProvider) as

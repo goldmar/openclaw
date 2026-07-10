@@ -43,7 +43,7 @@ import type { HermesSource } from "./source.js";
 import type { PlannedTargets } from "./targets.js";
 
 const OPENAI_PROVIDER_ID = "openai";
-const OPENAI_DEFAULT_MODEL = "openai/gpt-5.5";
+const OPENAI_DEFAULT_MODEL = "openai/gpt-5.6-sol";
 const HERMES_AUTH_DISPLAY_NAME = "Hermes import";
 
 type AgentDefaultModelConfigs = NonNullable<

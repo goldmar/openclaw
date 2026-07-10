@@ -5,7 +5,12 @@ import { describe, expect, it } from "vitest";
 import { buildOpenAIProvider } from "./openai-provider.js";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY ?? "";
-const DEFAULT_LIVE_MODEL_IDS = ["chat-latest", "gpt-5.5", "gpt-5.4-mini", "gpt-5.4-nano"] as const;
+const DEFAULT_LIVE_MODEL_IDS = [
+  "chat-latest",
+  "gpt-5.6-sol",
+  "gpt-5.4-mini",
+  "gpt-5.4-nano",
+] as const;
 const liveEnabled = OPENAI_API_KEY.trim().length > 0 && process.env.OPENCLAW_LIVE_TEST === "1";
 const describeLive = liveEnabled ? describe : describe.skip;
 
@@ -25,7 +30,7 @@ function resolveLiveModelCase(modelId: string): LiveModelCase {
     case "chat-latest":
       return {
         modelId,
-        templateId: "gpt-5.5",
+        templateId: "gpt-5.6-sol",
         templateName: "GPT-5.5",
         cost: { input: 5, output: 30, cacheRead: 0.5, cacheWrite: 0 },
         contextWindow: 400_000,
@@ -33,10 +38,10 @@ function resolveLiveModelCase(modelId: string): LiveModelCase {
         reasoning: false,
         textVerbosity: "medium",
       };
-    case "gpt-5.5":
+    case "gpt-5.6-sol":
       return {
         modelId,
-        templateId: "gpt-5.5",
+        templateId: "gpt-5.6-sol",
         templateName: "GPT-5.5",
         cost: { input: 5, output: 30, cacheRead: 0.5, cacheWrite: 0 },
         contextWindow: 1_000_000,

@@ -548,7 +548,7 @@ describe("scripts/openclaw-cross-os-release-checks", () => {
         OPENCLAW_CROSS_OS_MODEL: "openai/gpt-5.4-nano",
       })?.model,
     ).toBe("openai/gpt-5.4-nano");
-    expect(resolveProviderConfig("openai", {})?.model).toBe("openai/gpt-5.5");
+    expect(resolveProviderConfig("openai", {})?.model).toBe("openai/gpt-5.6-sol");
   });
 
   it("keeps release cross-OS OpenAI smoke on GPT-5.5", () => {
@@ -559,9 +559,9 @@ describe("scripts/openclaw-cross-os-release-checks", () => {
     const releaseChecks = readFileSync(".github/workflows/openclaw-release-checks.yml", "utf8");
 
     expect(workflow).toContain(
-      "OPENCLAW_CROSS_OS_OPENAI_MODEL: ${{ inputs.openai_model || vars.OPENCLAW_CROSS_OS_OPENAI_MODEL || 'openai/gpt-5.5' }}",
+      "OPENCLAW_CROSS_OS_OPENAI_MODEL: ${{ inputs.openai_model || vars.OPENCLAW_CROSS_OS_OPENAI_MODEL || 'openai/gpt-5.6-sol' }}",
     );
-    expect(releaseChecks).toContain("openai_model: openai/gpt-5.5");
+    expect(releaseChecks).toContain("openai_model: openai/gpt-5.6-sol");
   });
 
   it("keeps release smoke plugin allowlists focused on agent-turn essentials", () => {

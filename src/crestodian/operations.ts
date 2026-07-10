@@ -128,7 +128,7 @@ const PLUGIN_UNINSTALL_RE =
 const OPENAI_API_DEFAULT_MODEL_REF = `${DEFAULT_PROVIDER}/${DEFAULT_MODEL}`;
 const ANTHROPIC_API_DEFAULT_MODEL_REF = "anthropic/claude-opus-4-8";
 const CLAUDE_CLI_DEFAULT_MODEL_REF = "claude-cli/claude-opus-4-8";
-const CODEX_APP_SERVER_DEFAULT_MODEL_REF = "openai/gpt-5.5";
+const CODEX_APP_SERVER_DEFAULT_MODEL_REF = OPENAI_API_DEFAULT_MODEL_REF;
 
 /** Parse one user command into Crestodian's closed operation union. */
 export function parseCrestodianOperation(input: string): CrestodianOperation {

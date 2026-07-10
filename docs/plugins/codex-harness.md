@@ -16,7 +16,7 @@ app-server execution. OpenClaw still owns chat channels, session files, model
 selection, OpenClaw dynamic tools, approvals, media delivery, and the visible
 transcript mirror.
 
-The normal setup uses canonical OpenAI model refs such as `openai/gpt-5.5`.
+The normal setup uses canonical OpenAI model refs such as `openai/gpt-5.6-sol`.
 Do not configure legacy Codex GPT refs. Put OpenAI agent auth order
 under `auth.order.openai`; older legacy Codex auth profile ids and
 legacy Codex auth order entries are legacy state repaired by
@@ -35,7 +35,7 @@ runtime for generic OpenClaw runs with a different `exec` input shape.
 
 For the broader model/provider/runtime split, start with
 [Agent runtimes](/concepts/agent-runtimes). The short version is:
-`openai/gpt-5.5` is the model ref, `codex` is the runtime, and Telegram,
+`openai/gpt-5.6-sol` is the model ref, `codex` is the runtime, and Telegram,
 Discord, Slack, or another channel remains the communication surface.
 
 ## Requirements
@@ -78,7 +78,7 @@ Enable the bundled `codex` plugin and select an OpenAI agent model:
   },
   agents: {
     defaults: {
-      model: "openai/gpt-5.5",
+      model: "openai/gpt-5.6-sol",
     },
   },
 }
@@ -290,7 +290,7 @@ default.
   },
   agents: {
     defaults: {
-      model: "openai/gpt-5.5",
+      model: "openai/gpt-5.6-sol",
     },
   },
 }
@@ -322,7 +322,7 @@ This shape keeps Claude as the default agent and adds a named Codex agent:
       {
         id: "codex",
         name: "Codex",
-        model: "openai/gpt-5.5",
+        model: "openai/gpt-5.6-sol",
       },
     ],
   },
@@ -351,7 +351,7 @@ fail-closed rule:
   },
   agents: {
     defaults: {
-      model: "openai/gpt-5.5",
+      model: "openai/gpt-5.6-sol",
     },
   },
   plugins: {

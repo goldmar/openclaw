@@ -385,7 +385,7 @@ describe("Parallels smoke model selection", () => {
 
     expect(providerAuth).toContain("OPENCLAW_PARALLELS_OPENAI_MODEL");
     expect(providerAuth).toContain("OPENCLAW_PARALLELS_WINDOWS_OPENAI_MODEL");
-    expect(providerAuth).toContain("openai/gpt-5.5");
+    expect(providerAuth).toContain("openai/gpt-5.6-sol");
     expect(providerAuth).toContain('authChoice: "openai-api-key"');
     expect(providerAuth).toContain('authChoice: "apiKey"');
     expect(providerAuth).toContain('authChoice: "minimax-global-api"');
@@ -416,7 +416,7 @@ describe("Parallels smoke model selection", () => {
   it("keeps Windows provider-only plugin isolation temp scripts per run", () => {
     const script = windowsProviderOnlyPluginIsolationScript({
       fallbackPluginId: "openai",
-      modelId: "openai/gpt-5.5",
+      modelId: "openai/gpt-5.6-sol",
     });
 
     expect(script).toContain("[guid]::NewGuid().ToString('N')");
@@ -1065,7 +1065,7 @@ if (isPrlctl) {
       apiKeyValue: "sk-openai",
       authChoice: "openai-api-key",
       authKeyFlag: "openai-api-key",
-      modelId: "openai/gpt-5.5",
+      modelId: "openai/gpt-5.6-sol",
     });
 
     expect(
@@ -1095,7 +1095,7 @@ if (isPrlctl) {
       apiKeyValue: "sk-openai",
       authChoice: "openai-api-key",
       authKeyFlag: "openai-api-key",
-      modelId: "openai/gpt-5.5",
+      modelId: "openai/gpt-5.6-sol",
     });
 
     expect(

@@ -208,7 +208,7 @@ describe("buildOpenAIProvider", () => {
       "gpt-5.6-luna",
     ]);
     expect(gpt56Models?.map((model) => model.thinkingLevelMap?.off)).toEqual([null, null, null]);
-    expect(OPENAI_DEFAULT_MODEL).toBe("openai/gpt-5.5");
+    expect(OPENAI_DEFAULT_MODEL).toBe("openai/gpt-5.6-sol");
   });
 
   it("scopes the OpenAI API-key catalog to the OpenAI provider id", async () => {

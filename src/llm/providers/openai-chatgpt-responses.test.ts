@@ -101,6 +101,37 @@ describe("streamOpenAICodexResponses transport", () => {
     messages: [{ role: "user", content: "hi", timestamp: 1 }],
   } satisfies Context;
 
+  it("preserves the versioned OpenClaw user agent for Codex model compatibility gates", async () => {
+    let capturedHeaders: Headers | undefined;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+        capturedHeaders = new Headers(init?.headers);
+        throw new Error("usage limit: stop after headers");
+      }),
+    );
+
+    const stream = streamOpenAICodexResponses({ ...model, id: "gpt-5.6-sol" }, context, {
+      apiKey: createJwt({
+        "https://api.openai.com/auth": {
+          chatgpt_account_id: "acct-1",
+        },
+      }),
+      headers: {
+        "User-Agent": "openclaw/2026.6.11",
+        originator: "openclaw",
+        version: "2026.6.11",
+      },
+      transport: "sse",
+    });
+
+    await stream.result();
+
+    expect(capturedHeaders?.get("originator")).toBe("openclaw");
+    expect(capturedHeaders?.get("user-agent")).toBe("openclaw/2026.6.11");
+    expect(capturedHeaders?.get("version")).toBe("2026.6.11");
+  });
+
   it("preserves max for GPT-5.6 simple Codex Responses requests", async () => {
     let capturedPayload: Record<string, unknown> | undefined;
     const stream = streamSimpleOpenAICodexResponses(
